@@ -27,7 +27,7 @@ async function mainStart() {
       .click()
 
     await timeout(2000)
-    
+
     await driver
       .findElement(By.css('.btn-selecionar-entidade[alt="IRN Registo"]'))
       .click()
@@ -45,7 +45,7 @@ async function mainStart() {
     await timeout(2000)
 
     await driver.findElement(By.css('a.set-date-button')).click()
-  
+
     await timeout(2000)
 
     async function checkResultAndBack(...args) {
@@ -67,10 +67,16 @@ async function mainStart() {
     }
 
     // Local de atendimento
-    const distrito = await driver.findElement(By.css('[name="IdDistrito"]'))
-    const distritoOptions = await distrito.findElements(By.css('option'))
+    let distrito = await driver.findElement(By.css('[name="IdDistrito"]'))
+    const distritoOptions = Array.from(
+          await distrito.findElements(By.css('option'))
+        ).map(option => option.getAttribute('value'))
 
-    for (const element of distritoOptions) {
+    for (const distritoOptionValue of distritoOptions) {
+      distrito = await driver.findElement(By.css('[name="IdDistrito"]'))
+      const element = await driver
+          .findElement(By.css(`[name="IdDistrito"] option[value="${await distritoOptionValue}"]`))
+
       const distritoText = await element.getText()
       const distritoValue = await element.getAttribute('value')
       if (!distritoText || !distritoValue) {
@@ -81,9 +87,16 @@ async function mainStart() {
       await element.click()
       await timeout(1000)
 
-      const localidade = await driver.findElement(By.css('[name="IdLocalidade"]'))
-      const localidadeOptions = await localidade.findElements(By.css('option'))
-      for (const elementLocalidadeOption of localidadeOptions) {
+      let localidade = await driver.findElement(By.css('[name="IdLocalidade"]'))
+      const localidadeOptionsValues = Array.from(
+            await localidade.findElements(By.css('option'))
+          ).map(option => option.getAttribute('value'))
+
+      for (const elementLocalidadeOptionValue of localidadeOptionsValues) {
+        localidade = await driver.findElement(By.css('[name="IdLocalidade"]'))
+        const elementLocalidadeOption =  await driver
+            .findElement(By.css(`[name="IdLocalidade"] option[value="${await elementLocalidadeOptionValue}"]`))
+
         const localidadeText = await elementLocalidadeOption.getText()
         const localidadeValue = await elementLocalidadeOption.getAttribute('value')
         if (!localidadeText || !localidadeValue) {
@@ -94,13 +107,18 @@ async function mainStart() {
         await elementLocalidadeOption.click()
         await timeout(1000)
 
-        const atendimento = await driver.findElement(By.css('[name="IdLocalAtendimento"]'))
-        const atendimentoOptions = await atendimento.findElements(By.css('option'))
+        let atendimento = await driver.findElement(By.css('[name="IdLocalAtendimento"]'))
+        const atendimentoOptions = Array.from(
+            await atendimento.findElements(By.css('option'))
+          ).map(async option => await option.getAttribute('value'))
         const isDisabled = await atendimento.getAttribute('disabled')
-        console.log('--- isDisabled:', isDisabled)
 
         if (!isDisabled) {
-          for (const elementAtendimentoOption of atendimentoOptions) {
+          for (const elementAtendimentoOptionValue of atendimentoOptions) {
+            atendimento = await driver.findElement(By.css('[name="IdLocalAtendimento"]'))
+            const elementAtendimentoOption = await driver
+                .findElement(By.css(`[name="IdLocalAtendimento"] option[value="${await elementAtendimentoOptionValue}"]`))
+
             const atendimentoText = await elementAtendimentoOption.getText()
             const atendimentoValue = await elementAtendimentoOption.getAttribute('value')
             if (!atendimentoText || !atendimentoValue) {
@@ -111,14 +129,18 @@ async function mainStart() {
             await timeout(1000)
 
             await checkResultAndBack(distritoText, localidadeText, atendimentoText)
+            await timeout(1000)
           }
         } else {
           await checkResultAndBack(distritoText, localidadeText)
+          await timeout(1000)
         }
       }
     }
 
     console.log('successPath: ', successPath)
+  } catch (error) {
+    console.error(error)
   } finally {
     driver.quit()
   }

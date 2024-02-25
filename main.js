@@ -54,9 +54,12 @@ async function mainStart() {
       await driver.findElement(By.css('a.set-date-button')).click()
       await timeout(1000)
 
-      await driver.findElement(By.css('.error-message h5')).catch(() => {
+      const h5 = await driver.findElement(By.css('.schedule-list .error-message h5')).catch(() => {
         successPath.push(path)
       })
+      if (!h5 && !successPath.includes((path))) {
+        successPath.push(path)
+      }
 
       await stepBack()
     }
@@ -94,7 +97,7 @@ async function mainStart() {
 
       for (const elementLocalidadeOptionValue of localidadeOptionsValues) {
         localidade = await driver.findElement(By.css('[name="IdLocalidade"]'))
-        const elementLocalidadeOption =  await driver
+        const elementLocalidadeOption = await driver
             .findElement(By.css(`[name="IdLocalidade"] option[value="${await elementLocalidadeOptionValue}"]`))
 
         const localidadeText = await elementLocalidadeOption.getText()
@@ -110,7 +113,7 @@ async function mainStart() {
         let atendimento = await driver.findElement(By.css('[name="IdLocalAtendimento"]'))
         const atendimentoOptions = Array.from(
             await atendimento.findElements(By.css('option'))
-          ).map(async option => await option.getAttribute('value'))
+          ).map(option => option.getAttribute('value'))
         const isDisabled = await atendimento.getAttribute('disabled')
 
         if (!isDisabled) {
@@ -124,8 +127,8 @@ async function mainStart() {
             if (!atendimentoText || !atendimentoValue) {
               continue
             }
-            atendimento.click()
-            elementAtendimentoOption.click()
+            await atendimento.click()
+            await elementAtendimentoOption.click()
             await timeout(1000)
 
             await checkResultAndBack(distritoText, localidadeText, atendimentoText)
@@ -138,7 +141,9 @@ async function mainStart() {
       }
     }
 
-    console.log('successPath: ', successPath)
+    console.log(JSON.stringify({
+      successPath,
+    }))
   } catch (error) {
     console.error(error)
   } finally {

@@ -1,0 +1,1 @@
+module.exports.TELEGRAM_TOKEN = '6895442508:AAFQ_cbaJVWzDkbg8GE0io12GPqr18P_QsQ'

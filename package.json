@@ -4,12 +4,17 @@
   "description": "",
   "main": "main.js",
   "scripts": {
-    "start": "node main.js"
+    "bot:start": "node bot/bot.js",
+    "parser:start": "node main.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "node-telegram-bot-api": "^0.64.0",
     "selenium-webdriver": "^4.0.0-beta.4"
+  },
+  "devDependencies": {
+    "@types/node-telegram-bot-api": "^0.64.2"
   }
 }

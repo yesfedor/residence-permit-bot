@@ -8,7 +8,7 @@ async function mainStart() {
     .forBrowser("chrome")
     .setChromeService(
       chrome.setDefaultService(
-        new chrome.ServiceBuilder(path.join(__dirname, 'drivers/chromedriver')).build()
+        new chrome.ServiceBuilder(path.join(__dirname, '../drivers/chromedriver')).build()
       )
     )
     .build()

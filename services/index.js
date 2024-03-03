@@ -5,10 +5,13 @@ const { exec } = require('child_process')
 const cacheManagerInstance = cacheManager()
 
 cacheManagerInstance.init()
-cacheManagerInstance.updateStateItem('repeatInterval', 10 * 60 * 1000)
+
+cacheManagerInstance.updateStateItem('repeatInterval', 2 * 60 * 1000)
+
 cacheManagerInstance.updateStateItem('allowUsersId', [
   448873904,
 ])
+
 cacheManagerInstance.updateStateItem('schedulesByChatId', [])
 
 async function send(chatId, text) {
@@ -36,7 +39,13 @@ async function startAssert(chatId, interval = 0) {
       const { successPath } = JSON.parse(stdout.slice(indexOf))
 
       if (!interval) {
-        const prettyText = `Найдено ${successPath.length} доступных для записи путей:\n ${successPath.join(' \n --- \n ')}`
+        let prettyText = ``
+        if (successPath.length) {
+          prettyText = `Найдено ${successPath.length} доступных для записи путей:\n ${successPath.join(' \n --- \n ')}`
+        } else {
+          prettyText = 'Доступных для записи путей не найдено'
+        }
+
         await send(chatId, prettyText)
         return
       }
@@ -47,7 +56,12 @@ async function startAssert(chatId, interval = 0) {
       // TODO: check statuses
 
       cacheManagerInstance.updateStateItem('schedule', successPath)
-      const prettyText = `Найдено ${successPath.length} доступных для записи путей:\n ${successPath.join(' \n --- \n ')}`
+      let prettyText = ``
+      if (successPath.length) {
+        prettyText = `Найдено ${successPath.length} доступных для записи путей:\n ${successPath.join(' \n --- \n ')}`
+      } else {
+        prettyText = 'Доступных для записи путей не найдено'
+      }
       await send(chatId, prettyText)
     } catch (e) {
       await send(chatId, 'Ошибка в работе парсера. Обратитесь к @yesfedor для исправления ошибок.')

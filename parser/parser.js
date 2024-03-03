@@ -1,7 +1,7 @@
 const path = require('node:path')
 const chrome = require("selenium-webdriver/chrome")
 
-const { Builder, By, Key, until } = require("selenium-webdriver")
+const {Builder, By, Key, until} = require("selenium-webdriver")
 
 async function mainStart() {
   let driver = await new Builder()
@@ -72,13 +72,13 @@ async function mainStart() {
     // Local de atendimento
     let distrito = await driver.findElement(By.css('[name="IdDistrito"]'))
     const distritoOptions = Array.from(
-          await distrito.findElements(By.css('option'))
-        ).map(option => option.getAttribute('value'))
+      await distrito.findElements(By.css('option'))
+    ).map(option => option.getAttribute('value'))
 
     for (const distritoOptionValue of distritoOptions) {
       distrito = await driver.findElement(By.css('[name="IdDistrito"]'))
       const element = await driver
-          .findElement(By.css(`[name="IdDistrito"] option[value="${await distritoOptionValue}"]`))
+        .findElement(By.css(`[name="IdDistrito"] option[value="${await distritoOptionValue}"]`))
 
       const distritoText = await element.getText()
       const distritoValue = await element.getAttribute('value')
@@ -92,13 +92,13 @@ async function mainStart() {
 
       let localidade = await driver.findElement(By.css('[name="IdLocalidade"]'))
       const localidadeOptionsValues = Array.from(
-            await localidade.findElements(By.css('option'))
-          ).map(option => option.getAttribute('value'))
+        await localidade.findElements(By.css('option'))
+      ).map(option => option.getAttribute('value'))
 
       for (const elementLocalidadeOptionValue of localidadeOptionsValues) {
         localidade = await driver.findElement(By.css('[name="IdLocalidade"]'))
         const elementLocalidadeOption = await driver
-            .findElement(By.css(`[name="IdLocalidade"] option[value="${await elementLocalidadeOptionValue}"]`))
+          .findElement(By.css(`[name="IdLocalidade"] option[value="${await elementLocalidadeOptionValue}"]`))
 
         const localidadeText = await elementLocalidadeOption.getText()
         const localidadeValue = await elementLocalidadeOption.getAttribute('value')
@@ -112,15 +112,15 @@ async function mainStart() {
 
         let atendimento = await driver.findElement(By.css('[name="IdLocalAtendimento"]'))
         const atendimentoOptions = Array.from(
-            await atendimento.findElements(By.css('option'))
-          ).map(option => option.getAttribute('value'))
+          await atendimento.findElements(By.css('option'))
+        ).map(option => option.getAttribute('value'))
         const isDisabled = await atendimento.getAttribute('disabled')
 
         if (!isDisabled) {
           for (const elementAtendimentoOptionValue of atendimentoOptions) {
             atendimento = await driver.findElement(By.css('[name="IdLocalAtendimento"]'))
             const elementAtendimentoOption = await driver
-                .findElement(By.css(`[name="IdLocalAtendimento"] option[value="${await elementAtendimentoOptionValue}"]`))
+              .findElement(By.css(`[name="IdLocalAtendimento"] option[value="${await elementAtendimentoOptionValue}"]`))
 
             const atendimentoText = await elementAtendimentoOption.getText()
             const atendimentoValue = await elementAtendimentoOption.getAttribute('value')

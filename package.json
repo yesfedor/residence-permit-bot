@@ -4,8 +4,9 @@
   "description": "",
   "main": "main.js",
   "scripts": {
+    "services": "node services/index.js",
     "bot:start": "node bot/bot.js",
-    "parser:start": "node main.js"
+    "parser:start": "node parser/parser.js"
   },
   "keywords": [],
   "author": "",

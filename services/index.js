@@ -15,6 +15,8 @@ cacheManagerInstance.getStateItem('allowUsersId', [
 
 cacheManagerInstance.getStateItem('schedulesByChatId', [])
 
+cacheManagerInstance.updateStateItem('isRunning', false)
+
 async function send(chatId, text) {
   try {
     await bot.sendMessage(chatId, text)
@@ -85,8 +87,8 @@ async function startAssert(chatId, interval = 0) {
 bot.on('message', async ({from, text, chat}) => {
   const commands = {
     start: '/start',
-    run: 'Запустить проверку',
-    schedule: 'Создать проверку по расписанию',
+    run: '/check',
+    schedule: '/scheduled',
   }
   const commandsValues = Object.values(commands)
 
@@ -101,7 +103,7 @@ bot.on('message', async ({from, text, chat}) => {
   }
 
   switch (text) {
-    case '/start':
+    case commands.start:
       await bot.sendMessage(chat.id, 'Выберите действие:', {
         parse_mode: "MarkdownV2",
         reply_markup: JSON.stringify({
@@ -113,12 +115,12 @@ bot.on('message', async ({from, text, chat}) => {
       })
       return true
 
-    case 'Запустить проверку':
+    case commands.run:
       await send(chat.id, 'Ваш запрос был получен и будет обработан через 5-10 минут')
       await startAssert(chat.id)
       return true
 
-    case 'Создать проверку по расписанию':
+    case commands.schedule:
       const schedulesByChatId = cacheManagerInstance.getStateItem('schedulesByChatId')
       if (schedulesByChatId.includes(chat.id)) {
         await send(chat.id, `В чате уже существует проверка по расписанию`)

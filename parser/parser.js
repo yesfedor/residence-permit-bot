@@ -18,6 +18,7 @@ async function mainStart() {
   }
 
   try {
+    let counterPath = 0
     const successPath = []
 
     await driver.get("https://siga.marcacaodeatendimento.pt/Marcacao/MarcacaoInicio")
@@ -60,6 +61,8 @@ async function mainStart() {
       if (!h5 && !successPath.includes((path))) {
         successPath.push(path)
       }
+
+      counterPath++
 
       await stepBack()
     }
@@ -143,6 +146,7 @@ async function mainStart() {
 
     console.log(JSON.stringify({
       successPath,
+      counterPath,
     }))
   } catch (error) {
     console.error(error)

@@ -6,10 +6,11 @@ const cacheManagerInstance = cacheManager()
 
 cacheManagerInstance.init()
 
-cacheManagerInstance.updateStateItem('repeatInterval', 10 * 60 * 1000)
+cacheManagerInstance.getStateItem('repeatInterval', 10 * 60 * 1000)
 
-cacheManagerInstance.updateStateItem('allowUsersId', [
+cacheManagerInstance.getStateItem('allowUsersId', [
   448873904,
+  5158846554,
 ])
 
 cacheManagerInstance.updateStateItem('schedulesByChatId', [])
@@ -36,14 +37,14 @@ async function startAssert(chatId, interval = 0) {
     }
     try {
       const indexOf = stdout.indexOf('{')
-      const { successPath } = JSON.parse(stdout.slice(indexOf))
+      const { successPath, counterPath } = JSON.parse(stdout.slice(indexOf))
 
       if (!interval) {
         let prettyText = ``
         if (successPath.length) {
-          prettyText = `Найдено ${successPath.length} доступных для записи путей:\n ${successPath.join(' \n --- \n ')}`
+          prettyText = `Проверено путей: ${counterPath}. \n Найдено ${successPath.length} доступных для записи путей: \n ${successPath.join(' \n --- \n ')}`
         } else {
-          prettyText = 'Доступных для записи путей не найдено'
+          prettyText = `Доступных для записи путей не найдено. Проверено путей: ${counterPath}`
         }
 
         await send(chatId, prettyText)
@@ -58,9 +59,9 @@ async function startAssert(chatId, interval = 0) {
       cacheManagerInstance.updateStateItem('schedule', successPath)
       let prettyText = ``
       if (successPath.length) {
-        prettyText = `Найдено ${successPath.length} доступных для записи путей:\n ${successPath.join(' \n --- \n ')}`
+        prettyText = `Проверено путей: ${counterPath}. \n Найдено ${successPath.length} доступных для записи путей: \n ${successPath.join(' \n --- \n ')}`
       } else {
-        prettyText = 'Доступных для записи путей не найдено'
+        prettyText = `Доступных для записи путей не найдено. Проверено путей: ${counterPath}`
       }
       await send(chatId, prettyText)
     } catch (e) {
@@ -70,6 +71,16 @@ async function startAssert(chatId, interval = 0) {
 }
 
 bot.on('message', async ({from, text, chat}) => {
+  const commands = {
+    start: '/start',
+    run: 'Запустить проверку',
+    schedule: 'Создать проверку по расписанию',
+  }
+  const commandsValues = Object.values(commands)
+
+  if (!commandsValues.includes(text)) {
+    return
+  }
 
   const allowUsersId = cacheManagerInstance.getStateItem('allowUsersId')
   if (!allowUsersId.includes(from.id)) {

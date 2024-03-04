@@ -13,7 +13,7 @@ cacheManagerInstance.getStateItem('allowUsersId', [
   5158846554,
 ])
 
-cacheManagerInstance.updateStateItem('schedulesByChatId', [])
+cacheManagerInstance.getStateItem('schedulesByChatId', [])
 
 async function send(chatId, text) {
   try {
@@ -24,6 +24,16 @@ async function send(chatId, text) {
 }
 
 async function startAssert(chatId, interval = 0) {
+  cacheManagerInstance.init()
+
+  const isRunning = cacheManagerInstance.getStateItem('isRunning', false)
+  if (isRunning) {
+    await send(chatId, 'Проверка уже запущена.')
+    return
+  }
+
+  cacheManagerInstance.updateStateItem('isRunning', true)
+
   exec('npm run parser:start', async (error, stdout, stderr) => {
     if (error) {
       console.error('Ошибка при выполнении команды:', error.message)
@@ -66,6 +76,8 @@ async function startAssert(chatId, interval = 0) {
       await send(chatId, prettyText)
     } catch (e) {
       await send(chatId, 'Ошибка в работе парсера. Обратитесь к @yesfedor для исправления ошибок.')
+    } finally {
+      cacheManagerInstance.updateStateItem('isRunning', false)
     }
   })
 }

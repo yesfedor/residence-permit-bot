@@ -6,7 +6,7 @@ const cacheManagerInstance = cacheManager()
 
 cacheManagerInstance.init()
 
-cacheManagerInstance.updateStateItem('repeatInterval', 2 * 60 * 1000)
+cacheManagerInstance.updateStateItem('repeatInterval', 10 * 60 * 1000)
 
 cacheManagerInstance.updateStateItem('allowUsersId', [
   448873904,
@@ -83,19 +83,19 @@ bot.on('message', async ({from, text, chat}) => {
         parse_mode: "MarkdownV2",
         reply_markup: JSON.stringify({
           keyboard: [
-            ['Запустить проверку 🚀🚀🚀'],
+            ['Запустить проверку'],
           ],
           resize_keyboard: true,
         })
       })
       return true
 
-    case 'Запустить проверку 🚀🚀🚀':
+    case 'Запустить проверку':
       await send(chat.id, 'Ваш запрос был получен и будет обработан через 5-10 минут')
       await startAssert(chat.id)
       return true
 
-    case 'residence-permit:create a schedule':
+    case 'Создать проверку по расписанию':
       const schedulesByChatId = cacheManagerInstance.getStateItem('schedulesByChatId')
       if (schedulesByChatId.includes(chat.id)) {
         await send(chat.id, `В чате уже существует проверка по расписанию`)
